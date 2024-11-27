@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Loader } from '../Loader';
+import { Loader } from '../../components/Loader';
 import { getPeople } from '../../api';
 import { Person } from '../../types';
-import { PersonLink } from '../PersonLink';
+import { PersonLink } from '../../components/PersonLink';
 import { useParams } from 'react-router-dom';
+import cn from 'classnames';
 
 const getPeopleWithParents = (people: Person[]) => {
   return people.map(person => {
@@ -21,7 +22,7 @@ export const PeoplePage = () => {
   const [error, setError] = useState(false);
   const { personSlug } = useParams<string>();
 
-  useEffect(() => {
+  const handleLoadPeople = () => {
     setLoading(true);
     setError(false);
 
@@ -29,6 +30,10 @@ export const PeoplePage = () => {
       .then(p => setPeople(getPeopleWithParents(p)))
       .catch(() => setError(true))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    handleLoadPeople();
   }, []);
 
   return (
@@ -59,11 +64,9 @@ export const PeoplePage = () => {
                   return (
                     <tr
                       key={person.slug}
-                      className={
-                        personSlug === person.slug
-                          ? 'has-background-warning'
-                          : ''
-                      }
+                      className={cn({
+                        'has-background-warning': personSlug === person.slug,
+                      })}
                       data-cy="person"
                     >
                       <td>
